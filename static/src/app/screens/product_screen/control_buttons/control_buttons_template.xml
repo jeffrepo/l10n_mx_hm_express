@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- 
+        Heredamos la plantilla 'ControlButtons'.
+        Usamos t-inherit-mode="extension" para añadir contenido sin sobrescribir.
+        El nombre de la plantilla debe ser único.
+    -->
+    <t t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension" t-name="l10n_mx_hm_express.ControlButtonsExtended">
+        <!-- 
+            Buscamos el componente SelectPartnerButton (el botón de cliente) 
+            y colocamos nuestro botón después de él.
+        -->
+        <xpath expr="//SelectPartnerButton" position="after">
+            <!-- 
+                Invocamos al componente 'NotaRemisionButton', que fue registrado 
+                en la clase ControlButtons a través del parche JS (control_buttons_patch.js).
+            -->
+            <NotaRemisionButton/>
+        </xpath>
+    </t>
+</templates>

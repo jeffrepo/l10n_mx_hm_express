@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+{
+    'name': "l10n_mx_hm_express",
+    'summary': "Agrega botón de Nota Remisión en POS",
+    'description': """
+    Extiende la pantalla de punto de venta para agregar un botón de 'Nota Remisión'
+    """,
+    'author': "SISPAV",
+    'website': "https://www.yourcompany.com",
+    'category': 'Point of Sale',
+    'version': '0.1',
+    'license': 'LGPL-3',
+    'depends': ['point_of_sale'],
+    'data': [],
+    'assets': {
+        'point_of_sale._assets_pos': [
+            # JS
+            'l10n_mx_hm_express/static/src/app/models/pos_order.js',
+            'l10n_mx_hm_express/static/src/app/screens/product_screen/control_buttons/nota_remision_button.js',
+            'l10n_mx_hm_express/static/src/app/screens/product_screen/control_buttons/control_buttons.js',
+            'l10n_mx_hm_express/static/src/app/screens/payment_screen/payment_screen.js',
+            'l10n_mx_hm_express/static/src/app/screens/receipt_screen/receipt/order_receipt.js',
+            
+            # XML
+            'l10n_mx_hm_express/static/src/app/screens/product_screen/control_buttons/control_buttons_template.xml',
+            'l10n_mx_hm_express/static/src/app/screens/receipt_screen/receipt/receipt_header/receipt_header.xml',
+            'l10n_mx_hm_express/static/src/app/screens/receipt_screen/receipt/order_receipt.xml',
+        ],
+    },
+}
+
