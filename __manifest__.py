@@ -11,7 +11,16 @@
     'version': '0.1',
     'license': 'LGPL-3',
     'depends': ['point_of_sale'],
-    'data': [],
+    
+    'data': [
+        'security/ir.model.access.csv',
+        'reports/pos_order_remission_format_pdf_views.xml',
+        'reports/report_action.xml',
+        'views/pos_remission_views.xml',  
+        'views/point_of_sale_view.xml',
+        'views/pos_order_views.xml',
+    ],
+
     'assets': {
         'point_of_sale._assets_pos': [
             # JS

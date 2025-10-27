@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem 
+        id="menu_point_of_sale_remission"
+        name="Listado de remisiones"
+        parent="point_of_sale.menu_point_of_sale"
+        action="pos_remission_action"
+        sequence="15"/>
+</odoo>

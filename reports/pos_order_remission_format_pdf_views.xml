@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="pos_order_remission_report_pdf">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.basic_layout">
+                        <t t-set="o" t-value="o.with_context()"/>
+                        <style>
+                            
+                        </style>
+                        <!-- Encabezado -->
+                        <div class="header">
+                            <table style="width:100%; border:1px solid Transparent; padding:5px">
+                                <tr>
+                                    <td style="width:30%">
+                                        <img class="img-fluid" t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" alt="Logo" style=" width:75%; margin:5px; padding:10px"/>
+                                    </td>
+                                    <td style="width:60%; text-align:center">
+                                        <strong>
+                                            <t t-esc="o.company_id.name if o.company_id.name else '' "/>
+                                        </strong><br/>
+                                        <t  t-if="o.company_id.street" t-esc="o.company_id.street" /> <t  t-if="o.company_id.city" t-esc="o.company_id.city"/> <t  t-if="o.company_id.state_id" t-esc="o.company_id.state_id.name" /> <t  t-if="o.company_id.country_id" t-esc="o.company_id.country_id.name" /> <br/>
+                                        RFC: <t t-if="o.company_id.vat" t-esc="o.company_id.vat" /><br/>
+                                        Teléfono: <t t-if="o.company_id.phone" t-esc="o.company_id.phone" /><br/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="body">
+                            <table style="width:100%; border:1px solid Transparent">
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            REMISION
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        Contado
+                                    </td>
+                                    <td style="color:green">
+                                        ORIGINAL
+                                    </td>
+                                </tr>
+                            </table>
+                            <br/>
+                            <table style="width:100%; border: 1px solid Transparent; padding:5px">
+                                <tr>
+                                    <td>
+                                        Cte:
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                        Folio:
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Nombre
+                                    </td>
+                                    <td>
+                                        <t t-esc="o.partner_id.name if o.partner_id else ''"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="o.date_order.strftime('%d/%m/%Y') if o.date_order else ''"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Domicilio:
+                                    </td>
+                                    <td>
+                                        <t t-if="o.partner_id">
+                                            <t t-esc="o.partner_id.street if o.partner_id.street else ''"/> <t t-esc="o.partner_id.city if o.partner_id.city else ''"/> <t t-esc="o.partner_id.state_id.name if o.partner_id.state_id else ''"/> <t t-esc="o.partner_id.country_id.name if o.partner_id.country_id else ''"/>
+                                        </t>
+                                        
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <br/>
+                            <table style="width:100%; border:1px solid Transparent">
+                                <thead>
+                                    <tr style="border-top: 1px solid Transparent; border-bottom: 1px solid #000000">
+                                        <th>
+                                            Código
+                                        </th>
+                                        <th>
+                                            Artículo
+                                        </th>
+                                        <th>
+                                            Cant.
+                                        </th>
+                                        <th>
+                                            Precio
+                                        </th>
+                                        <th>
+                                            SubTotal
+                                        </th>
+                                        <th>
+                                            Impuestos
+                                        </th>
+                                        <th>
+                                            Total
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="total_products" t-value="0"/>
+                                    <t t-foreach="o.lines" t-as="line" t-key="line.id">
+                                        <t t-set="total_products" t-value="total_products + line.qty"/>
+                                        <tr style="border-bottom:1px solid #e0e0e0">
+                                            <td>
+                                                <t t-esc="line.product_id.default_code if line.product_id.default_code else ''"/>
+                                            </td>
+                                            <td><t t-esc="line.product_id.name"/></td>
+                                            <td style="text-align:center"><t t-esc="line.qty"/></td>
+                                            <td style="text-align:right"><t t-esc="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                            <td style="text-align:right"><t t-esc="line.price_unit * line.qty" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                            <td style="text-align:right">
+                                                <t t-foreach="line.tax_ids_after_fiscal_position" t-as="tax" t-key="tax_index">
+                                                    <t t-esc="tax.amount" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/> 
+                                                </t>
+                                            </td>
+                                            <td style="text-align:right"><t t-esc="line.price_subtotal_incl" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>                         
+                            </table>
+                            <br/>
+                            <table style="width:100%; border:1px solid transparent">
+                                <tr>
+                                    <td>
+                                        #Arts <br/>
+                                        Vendidos:
+                                    </td>
+                                    <td>
+                                        <t t-esc="total_products"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="o.amount_total_words"/>
+                                    </td>
+                                    <td>
+                                        Subtotal
+                                    </td>
+                                    <td style="text-align:right">
+                                        <strong>
+                                            <t t-esc="o.amount_paid - o.amount_tax" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        Impuesto:
+                                    </td>
+                                    <td style="text-align:right">
+                                        <strong>
+                                            <t t-esc="o.amount_tax" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="text-align:center">
+                                        <strong>
+                                            GRACIAS POR SU PREFERENCIA
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        Total
+                                    </td>
+                                    <td style="text-align:right">
+                                        <strong>
+                                            <t t-esc="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

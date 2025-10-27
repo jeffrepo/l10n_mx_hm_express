@@ -5,7 +5,6 @@ from odoo import models, fields
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
-
     def _pos_ui_models_to_load(self):
         result = super()._pos_ui_models_to_load()
         result.append('pos.order')
@@ -15,7 +14,7 @@ class PosSession(models.Model):
         return {
             'search_params': {
                 'domain': [],
-                'fields': ['delivery_note_custom'],
+                'fields': ['delivery_note_custom', 'amount_total_words'],
             },
         }
 

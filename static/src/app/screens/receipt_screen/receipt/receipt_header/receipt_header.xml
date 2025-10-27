@@ -10,7 +10,6 @@
                 <t t-if="props.data.delivery_note_custom">
 
                     <div class="pos-receipt-contact">
-                        <!-- <t t-esc="props.data.delivery_note_custom"/> -->
                         <div t-if="props.data.company.name" t-esc="props.data.company.name" style="font-weight: bold;"/>
                         <div t-if="props.data.company.street" t-esc="props.data.company.street" /> <div t-if="props.data.company.city" t-esc="props.data.company.city"/> <div t-if="props.data.company.state_id" t-esc="props.data.company.state_id.name" /> <div t-if="props.data.company.country_id" t-esc="props.data.company.country_id.name" />
                         RFC: <t t-if="props.data.company.vat" t-esc="props.data.company.vat" /><br/>

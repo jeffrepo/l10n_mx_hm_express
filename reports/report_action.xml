@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <data>
+        <!-- imprimiendo de forma horizontal -->
+        <record id="custom_pos_order_paperformat_landscape" model="report.paperformat">
+            <field name="name">Custom Pos Order Format Landscape</field>
+            <field name="format">A4</field>
+            <field name="orientation">Landscape</field>
+            <field name="header_spacing">52</field>
+            <field name="dpi">90</field>
+            <field name="margin_top">52</field>
+            <field name="margin_bottom">32</field>
+            <field name="margin_left">15</field>
+            <field name="margin_right">15</field>
+        </record>
+
+        <record id="action_custom_pos_order_format" model="ir.actions.report">
+            <field name="name">Nota de remisión PDF</field>
+            <field name="model">pos.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <!-- imprimiendo de forma horizontal -->
+            <field name="report_name">l10n_mx_hm_express.pos_order_remission_report_pdf</field> 
+            <field name="report_file">l10n_mx_hm_express.pos_order_remission_report_pdf</field>
+            <field name="paperformat_id" ref="custom_pos_order_paperformat_landscape"/>
+            <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        
+    </data>
+</odoo>

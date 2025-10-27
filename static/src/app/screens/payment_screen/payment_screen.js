@@ -17,11 +17,10 @@ patch(PaymentScreen.prototype, {
         // llamamos a Python vía RPC
         const amount_total_words = await this.getAmountTotalWords(order.amount_total, order.config_id.currency_id.id);
         order.amount_total_words = amount_total_words;
-        // Llamar al método validateOrder original. 
-        // Es crucial usar 'await' porque el método original es async.
+        
         const result = await super.validateOrder(isForceValidate);
 
-        // --- AQUÍ PUEDES AGREGAR MÁS LÓGICA DESPUÉS DE LA VALIDACIÓN ORIGINAL ---
+        await this.sendingLinesCreate(order);
         
         return result;
     },
@@ -42,5 +41,44 @@ patch(PaymentScreen.prototype, {
             return "";
         }
     },
+
+    async sendingLinesCreate(order) {
+        console.log("📦 Preparando datos del pedido:", order);
+        
+        try {
+            // Obtener las líneas correctamente - usa order.lines en lugar de order.orderlines
+            const orderLines = order.lines || order.get_orderlines?.() || [];
+            
+            console.log("📋 Líneas del pedido:", orderLines);
+            
+            const lineData = orderLines.map(line => ({
+                product_id: line.product_id?.id || false,
+                product_name: line.product_id?.name || '',
+                product_default_code: line.product_id?.default_code || '',
+                qty: line.qty || 0,
+                price_unit: line.price_unit || 0,
+                price_subtotal: line.price_unit * line.qty || 0,
+                discount: line.discount || 0,
+                line_note: line.note || '',
+                order_id: line.order_id?.id || false,
+                state: line.order_id?.state || false,
+            }));
+
+            console.log("📤 Enviando datos procesados:", lineData);
+
+            const result = await rpc("/web/dataset/call_kw/pos.remission/new_lines_create", {
+                model: "pos.remission",
+                method: "new_lines_create",
+                args: [lineData],
+                kwargs: {},
+            });
+            
+            console.log("✅ Líneas creadas exitosamente:", result);
+            return result;
+        } catch (error) {
+            console.error("❌ Error al crear las líneas:", error);
+            return {'success': false, 'error': error.message};
+        }
+    }
 
 });
