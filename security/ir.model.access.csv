@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 l10n_mx_hm_express.access_pos_remission,access_pos_remission,l10n_mx_hm_express.model_pos_remission,base.group_user,1,1,1,1
+l10n_mx_hm_express.access_pos_remission_wizard,access_pos_remission_wizard,l10n_mx_hm_express.model_pos_remission_wizard,base.group_user,1,1,1,1
+l10n_mx_hm_express.access_pos_remission_wizard_line,access_pos_remission_wizard_line,l10n_mx_hm_express.model_pos_remission_wizard_line,base.group_user,1,1,1,1

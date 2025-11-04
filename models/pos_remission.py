@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import UserError, ValidationError
 
 class PosRemission(models.Model):
     _name = 'pos.remission'
@@ -77,3 +78,17 @@ class PosRemission(models.Model):
         except Exception as e:
             print(f"❌ Error al procesar líneas: {str(e)}")
             return {'success': False, 'error': str(e)}
+        
+    def action_open_create_sale_order_wizard(self):
+        """
+        Abre el wizard para crear una orden de venta a partir de las remisiones seleccionadas.
+        """
+        # El active_ids se pasa automáticamente al default_get del wizard
+        return {
+            'name': "Crear Orden de Venta desde Remisiones",
+            'type': 'ir.actions.act_window',
+            'res_model': 'pos.remission.wizard',
+            'view_mode': 'form',
+            'target': 'new',  # Abre la vista como un diálogo (wizard)
+            'context': self.env.context,
+        }

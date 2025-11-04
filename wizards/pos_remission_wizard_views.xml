@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pos_remission_wizard_form" model="ir.ui.view">
+            <field name="name">pos.remission.wizard.form</field>
+            <field name="model">pos.remission.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Crear Orden de Venta desde Remisiones">
+                    <group>
+                        <field name="partner_id" required="1" string="Cliente"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom" string="Productos de las Remisiones">
+                            <field name="product_id"/>
+                            <field name="qty" string="Cantidad a Vender"/>
+                        </list>
+                    </field>
+                    <footer>
+                        <button name="action_create_sale_order" string="Crear Orden de Venta" type="object" class="btn-primary"/>
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_server_open_remission_wizard" model="ir.actions.server">
+            <field name="name">Crear Orden de Venta</field>
+            <field name="model_id" ref="l10n_mx_hm_express.model_pos_remission"/> <field name="binding_model_id" ref="l10n_mx_hm_express.model_pos_remission"/> <field name="state">code</field>
+            <field name="code">action = records.action_open_create_sale_order_wizard()</field>
+        </record>
+
+    </data>
+</odoo>

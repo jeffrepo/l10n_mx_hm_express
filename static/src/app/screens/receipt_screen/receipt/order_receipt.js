@@ -15,6 +15,7 @@ patch(OrderReceipt.prototype, {
         const partner = this.props.data.partner_id;
         this.props.data.headerData.delivery_note_custom = this.props.data.delivery_note_custom
         this.props.data.headerData.date = this.props.data.date
+        this.props.data.headerData.pos_reference = this.props.data.name
         // Usamos optional chaining para acceder a 'name' solo si 'partner' existe.
         return true;
     },

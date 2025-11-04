@@ -11,7 +11,7 @@
 
                     <div class="pos-receipt-contact">
                         <div t-if="props.data.company.name" t-esc="props.data.company.name" style="font-weight: bold;"/>
-                        <div t-if="props.data.company.street" t-esc="props.data.company.street" /> <div t-if="props.data.company.city" t-esc="props.data.company.city"/> <div t-if="props.data.company.state_id" t-esc="props.data.company.state_id.name" /> <div t-if="props.data.company.country_id" t-esc="props.data.company.country_id.name" />
+                        <t t-if="props.data.company.street" t-esc="props.data.company.street" /> <t t-if="props.data.company.city" t-esc="props.data.company.city"/> <br/><t t-if="props.data.company.state_id" t-esc="props.data.company.state_id.name" /> <t t-if="props.data.company.country_id" t-esc="props.data.company.country_id.name" /><br/>
                         RFC: <t t-if="props.data.company.vat" t-esc="props.data.company.vat" /><br/>
                         Teléfono: <t t-if="props.data.company.phone" t-esc="props.data.company.phone" /><br/>
                          
@@ -29,7 +29,7 @@
                                     <strong style="color:gray">ORIGINAL</strong>
                                 </td>
                                 <td style="text-align:left">
-                                    Folio: 
+                                    Folio: <t t-esc="props.data.pos_reference"/>
                                 </td>
                             </tr>
                             <tr>

@@ -23,10 +23,12 @@
                         <tr>
                             <td>Domicilio:</td>
                             <td>
-                                <t t-if="props.data.partner_id.street" t-esc="props.data.partner_id.street"/> 
-                                <t t-if="props.data.partner_id.city" t-esc="props.data.partner_id.city"/> 
-                                <t t-if="props.data.partner_id.state_id" t-esc="props.data.partner_id.state_id.name"/> 
-                                <t t-if="props.data.partner_id.country_id" t-esc="props.data.partner_id.country_id.name"/>
+                                <t t-if="props.data.partner_id">
+                                    <t t-if="props.data.partner_id.street" t-esc="props.data.partner_id.street"/><br/> 
+                                    <t t-if="props.data.partner_id.city" t-esc="props.data.partner_id.city"/> 
+                                    <t t-if="props.data.partner_id.state_id" t-esc="props.data.partner_id.state_id.name"/> <br/>
+                                    <t t-if="props.data.partner_id.country_id" t-esc="props.data.partner_id.country_id.name"/> <br/>
+                                </t>
                             </td>
                         </tr>
                     </table>
@@ -35,7 +37,7 @@
                     <div style="text-align:center; width:100%">Artículo</div>
                     <br />
 
-                    <table style="width:100%; border:1px solid transparent; font-size:8px">
+                    <table style="width:100%; border:1px solid transparent; font-size:11px">
                         <thead>
                             <tr style="border-bottom:1px solid #000000">
                                 <th>Descripción</th>
