@@ -4,7 +4,7 @@ from odoo import models, fields, api
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    delivery_note_custom = fields.Boolean(string="Nota de remisión", default=False, copy=False)
+    delivery_note_custom = fields.Boolean(string="Nota de remisión", default=False, copy=False, tracking=True)
     amount_total_words = fields.Char(string="Total en letras", default=False, copy=False)
     
     @api.model

@@ -16,9 +16,11 @@
         'security/ir.model.access.csv',
         'reports/pos_order_remission_format_pdf_views.xml',
         'reports/report_action.xml',
+        'views/account_move_views.xml',
         'views/pos_remission_views.xml',  
         'views/point_of_sale_view.xml',
         'views/pos_order_views.xml',
+        'views/sale_order_views.xml',
         'wizards/pos_remission_wizard_views.xml'
     ],
 
