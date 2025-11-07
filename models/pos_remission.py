@@ -41,7 +41,7 @@ class PosRemission(models.Model):
         created_count = 0
         updated_count = 0
         skipped_count = 0
-
+        order_list = []
         try:
             for line in lines_data:
                 product_id_js = line.get('product_id')
@@ -60,6 +60,15 @@ class PosRemission(models.Model):
 
                 # Buscar si ya existe una remisión
                 existing_remission = self.search([('product_id', '=', product_id.id)], limit=1)
+
+                #Vamos a buscar si tiene factura y colocarle remision
+                if line.get('order_id') and line.get('order_id') not in order_list:
+                    order = self.env['pos.order'].search([('id', '=', line.get('order_id'))])
+                    if order.account_move:
+                        order.account_move.delivery_note_custom = True
+                        order_list.append(
+                            line.get('order_id')
+                        )
 
                 if existing_remission:
                     new_qty = existing_remission.qty + line.get('qty', 0)

@@ -37,11 +37,9 @@ class SaleOrder(models.Model):
                 if remission:
                     # Si existe, actualizamos las cantidades
                     new_qty = remission.qty + qty
-                    new_pending = remission.pending_billing_amount + qty
 
                     remission.write({
                         'qty': new_qty,
-                        'pending_billing_amount': new_pending,
                         'average_cost_amount': product.standard_price,
                     })
 
@@ -51,7 +49,6 @@ class SaleOrder(models.Model):
                     self.env['pos.remission'].create({
                         'product_id': product.id,
                         'qty': qty,
-                        'pending_billing_amount': qty,
                         'average_cost_amount': product.standard_price,
                     })
                     _msg = f"🆕 Creada nueva remisión para {product.display_name}: {qty}"
@@ -69,7 +66,7 @@ class SaleOrder(models.Model):
                 continue
 
             for line in order.order_line:
-                product = line.product_id
+                product = line.product_d
                 qty = line.product_uom_qty
 
                 if not product or not product.id:
@@ -82,7 +79,6 @@ class SaleOrder(models.Model):
                 if remission:
                     # Restamos las cantidades y validamos que no queden negativas
                     new_qty = remission.qty - qty
-                    new_pending = remission.pending_billing_amount - qty
 
                     if new_qty < 0:
                         new_qty = 0
@@ -91,7 +87,6 @@ class SaleOrder(models.Model):
 
                     remission.write({
                         'qty': new_qty,
-                        'pending_billing_amount': new_pending,
                     })
 
                     print(f"❌ Orden cancelada → Remisión actualizada {product.display_name}: -{qty}")
