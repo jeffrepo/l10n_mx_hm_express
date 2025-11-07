@@ -24,12 +24,12 @@ class PosRemissionWizard(models.TransientModel):
             
         remissions = self.env['pos.remission'].browse(active_ids)
         
-        # Agrupar productos y sumar cantidades
+        # Agrupar productos y restar cantidades
         product_qty = {}
         for remission in remissions:
             if remission.product_id.id not in product_qty:
                 product_qty[remission.product_id.id] = 0
-            product_qty[remission.product_id.id] += remission.qty or 0
+            product_qty[remission.product_id.id] += remission.pending_billing_amount or 0
         
         # Crear líneas del wizard
         line_vals = []
@@ -44,43 +44,40 @@ class PosRemissionWizard(models.TransientModel):
         
         return res
 
-    def action_create_sale_order(self):
-        """Crear orden de venta con los productos seleccionados"""
+    def action_create_account_move(self):
+        """Crear factura de cliente con los productos seleccionados"""
         self.ensure_one()
         
         if not self.line_ids:
             raise UserError("No hay productos para crear la orden de venta.")
         
         # Prepara las líneas de la orden de venta
-        order_lines_vals = []
+        aml_vals = []
 
 
         for line in self.line_ids:
             if line.qty > 0:
                 print(f"line product_id {line.product_id} product_tmplate_id {line.product_id.product_tmpl_id}")
-                order_lines_vals.append((0, 0, {
+                aml_vals.append((0, 0, {
                     'product_id': line.product_id.id,
-                    # 1. Elimina 'name' o pásalo como False para que Odoo lo calcule
-                    # 'name': '', <--- ELIMINAR ESTA LÍNEA
-                    'product_uom_qty': line.qty,
-                    'price_unit': line.product_id.list_price,
-                    # 2. Recomendar incluir la unidad de medida, es semi-obligatoria
-                    'product_uom': line.product_id.uom_id.id, 
+                    'quantity': line.qty
                 }))
 
         # Crear la orden de venta
-        sale_order_vals = {
+        am_vals = {
             'partner_id': self.partner_id.id,
-            'order_line': order_lines_vals,
+            'move_type':'out_invoice',
+            'delivery_note_custom': False,
+            'invoice_line_ids': aml_vals,
         }
         
-        sale_order = self.env['sale.order'].create(sale_order_vals)
+        account_move = self.env['account.move'].create(am_vals)
 
         # Redirigir a la orden de venta creada
         return {
             'type': 'ir.actions.act_window',
-            'res_model': 'sale.order',
-            'res_id': sale_order.id,
+            'res_model': 'account.move',
+            'res_id': account_move.id,
             'view_mode': 'form',
             'target': 'current',
             'context': self.env.context,

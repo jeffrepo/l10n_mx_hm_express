@@ -16,106 +16,96 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         """Extiende la confirmación para manejar notas de remisión"""
         res = super().action_confirm()
-        
-        orders_with_remission = self.filtered(lambda o: o.delivery_note_custom)
-        if not orders_with_remission:
-            return res
 
-        # Optimización: obtener todos los productos de una vez
-        all_product_ids = orders_with_remission.mapped('order_line.product_id').ids
-        
-        # Buscar todas las remisiones existentes en una sola consulta
-        existing_remissions = self.env['pos.remission'].search([
-            ('product_id', 'in', all_product_ids)
-        ])
-        remission_by_product = {r.product_id.id: r for r in existing_remissions}
-        
-        # Preparar datos para creación/actualización
-        remission_vals_list = []
-        
-        for order in orders_with_remission:
+        for order in self:
+            # Solo aplica si la orden tiene la opción de nota de remisión
+            if not order.delivery_note_custom:
+                continue
+
             for line in order.order_line:
-                if not line.product_id:
+                product = line.product_id
+                qty = line.product_uom_qty
+
+                # Verificar que el producto es válido
+                if not product or not product.id:
                     continue
-                    
-                product_id = line.product_id.id
-                remission = remission_by_product.get(product_id)
-                
+
+                remission = self.env['pos.remission'].search([
+                    ('product_id', '=', product.id)
+                ], limit=1)
+
                 if remission:
-                    # Actualizar remisión existente
-                    remission.qty += line.product_uom_qty
-                    remission.pending_billing_amount += line.product_uom_qty
-                    remission.average_cost_amount = line.product_id.standard_price
-                else:
-                    # Preparar para crear nueva remisión
-                    remission_vals_list.append({
-                        'product_id': product_id,
-                        'qty': line.product_uom_qty,
-                        'pending_billing_amount': line.product_uom_qty,
-                        'average_cost_amount': line.product_id.standard_price,
+                    # Si existe, actualizamos las cantidades
+                    new_qty = remission.qty + qty
+                    new_pending = remission.pending_billing_amount + qty
+
+                    remission.write({
+                        'qty': new_qty,
+                        'pending_billing_amount': new_pending,
+                        'average_cost_amount': product.standard_price,
                     })
-                    # Actualizar el diccionario para evitar duplicados en la misma ejecución
-                    remission_by_product[product_id] = None
-        
-        # Crear nuevas remisiones en lote
-        if remission_vals_list:
-            self.env['pos.remission'].create(remission_vals_list)
-            
+
+                    _msg = f"🔁 Actualizada remisión producto {product.display_name}: +{qty}"
+                else:
+                    # Si no existe, la creamos
+                    self.env['pos.remission'].create({
+                        'product_id': product.id,
+                        'qty': qty,
+                        'pending_billing_amount': qty,
+                        'average_cost_amount': product.standard_price,
+                    })
+                    _msg = f"🆕 Creada nueva remisión para {product.display_name}: {qty}"
+
+                print(_msg)
+
         return res
 
     def action_cancel(self):
         """Maneja la cancelación de órdenes con notas de remisión"""
         res = super().action_cancel()
-        
-        orders_with_remission = self.filtered(lambda o: o.delivery_note_custom)
-        if not orders_with_remission:
-            return res
 
-        # Optimización similar a action_confirm
-        all_product_ids = orders_with_remission.mapped('order_line.product_id').ids
-        existing_remissions = self.env['pos.remission'].search([
-            ('product_id', 'in', all_product_ids)
-        ])
-        remission_by_product = {r.product_id.id: r for r in existing_remissions}
-        
-        remissions_to_unlink = self.env['pos.remission']
-        
-        for order in orders_with_remission:
+        for order in self:
+            if not order.delivery_note_custom:
+                continue
+
             for line in order.order_line:
-                if not line.product_id:
+                product = line.product_id
+                qty = line.product_uom_qty
+
+                if not product or not product.id:
                     continue
-                    
-                remission = remission_by_product.get(line.product_id.id)
-                if not remission:
-                    continue
-                    
-                new_qty = remission.qty - line.product_uom_qty
-                new_pending_billing_amount = remission.pending_billing_amount - line.product_uom_qty
-                
-                if new_qty <= 0:
-                    # Recolectar para eliminar después (evita modificar durante iteración)
-                    remissions_to_unlink |= remission
-                else:
-                    remission.qty = new_qty
-                    remission.pending_billing_amount = new_pending_billing_amount
-        
-        # Eliminar en lote
-        if remissions_to_unlink:
-            remissions_to_unlink.unlink()
-            
+
+                remission = self.env['pos.remission'].search([
+                    ('product_id', '=', product.id)
+                ], limit=1)
+
+                if remission:
+                    # Restamos las cantidades y validamos que no queden negativas
+                    new_qty = remission.qty - qty
+                    new_pending = remission.pending_billing_amount - qty
+
+                    if new_qty < 0:
+                        new_qty = 0
+                    if new_pending < 0:
+                        new_pending = 0
+
+                    remission.write({
+                        'qty': new_qty,
+                        'pending_billing_amount': new_pending,
+                    })
+
+                    print(f"❌ Orden cancelada → Remisión actualizada {product.display_name}: -{qty}")
+
         return res
 
-    @api.model
-    def _get_remission_for_products(self, product_ids):
-        """Método helper para obtener remisiones por productos"""
-        return self.env['pos.remission'].search([
-            ('product_id', 'in', list(product_ids))
-        ])
-    
-    @api.depends('invoice_ids')
-    def set_delivery_note_custom(self):
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        """Hereda la creación de facturas para copiar delivery_note_custom a account.move"""
+        moves = super()._create_invoices(grouped=grouped, final=final, date=date)
+
         for order in self:
-            print("se esta creando una factura apartir de la orden de venta") 
-            if order.invoice_ids:
-                for invoice in order.invoice_ids:
-                    invoice.delivery_note_custom = True
+            # Buscamos las facturas relacionadas al pedido
+            related_moves = moves.filtered(lambda m: m.invoice_origin and order.name in m.invoice_origin)
+            for move in related_moves:
+                move.delivery_note_custom = order.delivery_note_custom
+
+        return moves

@@ -5,7 +5,7 @@
             <field name="name">pos.remission.wizard.form</field>
             <field name="model">pos.remission.wizard</field>
             <field name="arch" type="xml">
-                <form string="Crear Orden de Venta desde Remisiones">
+                <form string="Crear Factura desde Remisiones">
                     <group>
                         <field name="partner_id" required="1" string="Cliente"/>
                     </group>
@@ -16,7 +16,7 @@
                         </list>
                     </field>
                     <footer>
-                        <button name="action_create_sale_order" string="Crear Orden de Venta" type="object" class="btn-primary"/>
+                        <button name="action_create_account_move" string="Crear factura" type="object" class="btn-primary"/>
                         <button string="Cancelar" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
@@ -24,9 +24,9 @@
         </record>
 
         <record id="action_server_open_remission_wizard" model="ir.actions.server">
-            <field name="name">Crear Orden de Venta</field>
+            <field name="name">Crear Factura</field>
             <field name="model_id" ref="l10n_mx_hm_express.model_pos_remission"/> <field name="binding_model_id" ref="l10n_mx_hm_express.model_pos_remission"/> <field name="state">code</field>
-            <field name="code">action = records.action_open_create_sale_order_wizard()</field>
+            <field name="code">action = records.action_open_create_account_move_wizard()</field>
         </record>
 
     </data>
