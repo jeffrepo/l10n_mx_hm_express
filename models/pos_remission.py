@@ -18,12 +18,12 @@ class PosRemission(models.Model):
         copy=False
     )
 
-    @api.depends('pending_billing_qty', 'product_id.list_price')
+    @api.depends('pending_billing_qty', 'average_cost_amount')
     def _compute_total_pending_billing(self):
         """Calcula automáticamente el total pendiente según cantidad * precio"""
         for rec in self:
             if rec.product_id:
-                rec.total_pending_billing = rec.pending_billing_qty * rec.product_id.list_price
+                rec.total_pending_billing = rec.pending_billing_qty * rec.average_cost_amount
             else:
                 rec.total_pending_billing = 0.0
 
