@@ -33,6 +33,7 @@
             'l10n_mx_hm_express/static/src/app/screens/product_screen/control_buttons/control_buttons.js',
             'l10n_mx_hm_express/static/src/app/screens/payment_screen/payment_screen.js',
             'l10n_mx_hm_express/static/src/app/screens/receipt_screen/receipt/order_receipt.js',
+            'l10n_mx_hm_express/static/src/js/pos_product_screen_patch.js',
             
             # XML
             'l10n_mx_hm_express/static/src/app/screens/product_screen/control_buttons/control_buttons_template.xml',
