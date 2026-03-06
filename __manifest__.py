@@ -39,6 +39,10 @@
             'l10n_mx_hm_express/static/src/app/screens/product_screen/control_buttons/control_buttons_template.xml',
             'l10n_mx_hm_express/static/src/app/screens/receipt_screen/receipt/receipt_header/receipt_header.xml',
             'l10n_mx_hm_express/static/src/app/screens/receipt_screen/receipt/order_receipt.xml',
+
+            'l10n_mx_hm_express/static/src/js/pos_receipt_cfdi.js',
+            'l10n_mx_hm_express/static/src/js/payment_cfdi_fetch.js',
+            'l10n_mx_hm_express/static/src/xml/pos_ticket_cfdi.xml',
         ],
     },
 }

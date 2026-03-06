@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+  <t t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+
+    <!-- BLOQUE 1: arriba, justo después del header y antes de líneas -->
+    <xpath expr="//OrderWidget" position="before">
+      <t t-if="props.data.mx_cfdi">
+        <div class="pos-receipt-order-data">
+          <div class="text-center">--------------------------------</div>
+
+          <div class="d-flex">
+            <span class="fw-bolder">FACTURA</span>
+            <span class="ms-auto" t-esc="props.data.mx_cfdi.invoice_name"/>
+          </div>
+
+          <t t-if="props.data.mx_cfdi.folio_ref">
+            <div>Folio Ref: <t t-esc="props.data.mx_cfdi.folio_ref"/></div>
+          </t>
+
+          <div>FECHA DE EMISIÓN: <t t-esc="props.data.mx_cfdi.fecha_emision"/></div>
+          <div>FECHA DE CERTIFICACIÓN: <t t-esc="props.data.mx_cfdi.fecha_certificacion"/></div>
+
+          <t t-if="props.data.mx_cfdi.expedido_en">
+            <div>EXPEDIDO EN: <t t-esc="props.data.mx_cfdi.expedido_en"/></div>
+          </t>
+
+          <div class="mt-1 fw-bolder">CLIENTE</div>
+          <div><t t-esc="props.data.mx_cfdi.cliente_nombre"/></div>
+          <div>RFC: <t t-esc="props.data.mx_cfdi.cliente_rfc"/></div>
+          <t t-if="props.data.mx_cfdi.cliente_domicilio">
+            <div class="text-break">Domicilio: <t t-esc="props.data.mx_cfdi.cliente_domicilio"/></div>
+          </t>
+
+          <div class="mt-1">FOLIO FISCAL (UUID):</div>
+          <div class="text-break"><t t-esc="props.data.mx_cfdi.uuid"/></div>
+
+          <div class="mt-1">N° Certificado SAT: <t t-esc="props.data.mx_cfdi.no_cert_sat"/></div>
+          <div>CERTIFICADO DEL EMISOR: <t t-esc="props.data.mx_cfdi.no_cert_emisor"/></div>
+
+          <div class="text-center">--------------------------------</div>
+        </div>
+      </t>
+
+      <!-- opcional: si quieres mostrar “CFDI en proceso” cuando aún no timbra -->
+      <t t-if="!props.data.mx_cfdi and props.data.mx_cfdi_pending">
+        <div class="pos-receipt-order-data">
+          <div class="text-center">--------------------------------</div>
+          <div class="text-center">CFDI en proceso… (reimprime cuando esté timbrado)</div>
+          <div class="text-center">--------------------------------</div>
+        </div>
+      </t>
+    </xpath>
+
+    <!-- BLOQUE 2: abajo, antes del footer -->
+    <xpath expr="//div[@class='before-footer']" position="before">
+      <t t-if="props.data.mx_cfdi">
+        <div class="pos-receipt-order-data mt-2">
+          <div><strong>OBSERVACIÓN</strong></div>
+          <div>CANTIDAD CON LETRA: <t t-esc="props.data.mx_cfdi.cantidad_letra"/></div>
+          <t t-if="props.data.mx_cfdi.forma_pago_cliente">
+            <div>Forma de Pago del Cliente: <t t-esc="props.data.mx_cfdi.forma_pago_cliente"/></div>
+          </t>
+          <t t-if="props.data.mx_cfdi.metodo_pago">
+            <div>Método de Pago: <t t-esc="props.data.mx_cfdi.metodo_pago"/></div>
+          </t>
+          <t t-if="props.data.mx_cfdi.uso_cfdi">
+            <div>Uso del CFDI: <t t-esc="props.data.mx_cfdi.uso_cfdi"/></div>
+          </t>
+          <t t-if="props.data.mx_cfdi.moneda">
+            <div>MONEDA: <t t-esc="props.data.mx_cfdi.moneda"/></div>
+          </t>
+
+          <div class="mt-1 fw-bolder text-center">EFECTOS FISCALES AL PAGO</div>
+
+          <t t-if="props.data.mx_cfdi.cadena_digital">
+            <div class="fw-bolder mt-1">CADENA DIGITAL:</div>
+            <div class="text-break" style="font-size: 9px; line-height: 1.2;">
+              <t t-esc="props.data.mx_cfdi.cadena_digital"/>
+            </div>
+          </t>
+          <div class="text-center">--------------------------------</div>
+          <t t-if="props.data.mx_cfdi.sello_digital_cfdi">
+            <div class="fw-bolder mt-1">SELLO DIGITAL CFDI:</div>
+            <div class="text-break" style="font-size: 9px; line-height: 1.2;">
+              <t t-esc="props.data.mx_cfdi.sello_digital_cfdi"/>
+            </div>
+          </t>
+
+          <div class="text-center">--------------------------------</div>
+          <t t-if="props.data.mx_cfdi.sello_digital_sat">
+            <div class="fw-bolder mt-1">SELLO DIGITAL DEL SAT:</div>
+            <div class="text-break" style="font-size: 9px; line-height: 1.2;">
+              <t t-esc="props.data.mx_cfdi.sello_digital_sat"/>
+            </div>
+          </t>
+           <div class="text-center">--------------------------------</div>
+
+           <div class="text-break" style="font-size: 9px; line-height: 1.2;">
+                POR ESTE PAGARE ME(NOS) OBLIGO(AMOS) INCONDICIONALMENTE Y SIN PROTESTA A PAGAR A LA 
+               ORDEN DE HM MAZATLAN LA CANTIDAD
+               <span t-esc="props.formatCurrency(taxTotals.order_sign * taxTotals.order_total)"/> (<t t-esc="props.data.mx_cfdi.cantidad_letra"/>) 
+               DE FACTURA <span t-esc="props.data.mx_cfdi.invoice_name"/> EN LA CIUDAD DE CULIACAN SINALOA EL DÍA <t t-esc="props.data.date" /> hrs 
+               EN CASO DE MORA CAUSARA INTERES MORATORIOS A RAZÓN DEL 7% MENSUAL.
+               
+           </div>
+
+            
+          <div class="mt-2">Nombre: <t t-esc="props.data.mx_cfdi.cliente_nombre"/></div>
+          <div>Domicilio: <t t-esc="props.data.mx_cfdi.cliente_domicilio"/></div>
+          <div class="mt-2">Firma: </div>
+            
+          <div class="text-center">--------------------------------</div>
+            <div class="text-center mt-2 fw-bolder">
+                ORIGINAL DEUDOR
+            </div>
+            
+            <div class="text-center mt-2">
+                EXPEDIDO EN MAZATLAN, SINALOA, MEX.
+            </div>
+
+            
+          <div class="text-center">
+              <img alt="Barcode" t-att-src="props.data.mx_cfdi.extra_values['barcode_src']"/>
+          </div>
+          <div class="text-center mt-1" style="font-size: 10px;">
+              Este documento es una representación impresa de un CFDI
+          </div>
+
+           <div class="text-center">--------------------------------</div>
+        </div>
+      </t>
+    </xpath>
+
+  </t>
+
+</templates>
