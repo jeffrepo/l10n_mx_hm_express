@@ -65,26 +65,24 @@ patch(ProductScreen.prototype, {
     // ==================================================
     async _barcodeProductAction(code) {
         console.log("📦 [POS] Escaneo detectado:", code);
-    
-        const scanned = code?.base_code || code?.code || "";
-    
+
         const product = this.pos.models["product.product"].find(
-            (p) => p.barcode === scanned
+            (p) => p.default_code === code
         );
-    
+
         if (!product) {
-            console.warn("❌ Producto no encontrado por escaneo:", scanned);
+            console.warn("❌ Producto no encontrado por escaneo:", code);
             this.barcodeReader.showNotFoundNotification(code);
             return;
         }
-    
+
         console.log("✅ Producto agregado por escaneo:", product.display_name);
-    
+
         await this.pos.addLineToCurrentOrder(
             { product_id: product },
             { code }
         );
-    
+
         this.numberBuffer.reset();
     },
 
