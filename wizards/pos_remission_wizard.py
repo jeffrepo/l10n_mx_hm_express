@@ -54,21 +54,12 @@ class PosRemissionWizard(models.TransientModel):
         active_ids = self.env.context.get('active_ids', [])
         remissions = self.env['pos.remission'].browse(active_ids)
 
-        # Mapeamos producto -> cantidad pendiente total
-        pending_by_product = {}
-        for remission in remissions:
-            product_id = remission.product_id.id
-            if product_id not in pending_by_product:
-                pending_by_product[product_id] = 0
-            pending_by_product[product_id] += remission.pending_billing_qty or 0
-
-        # Validar cantidades
+        # El pendiente es una referencia, no un límite para facturar.
+        selected_products = remissions.mapped('product_id')
         for line in self.line_ids:
-            pending_qty = pending_by_product.get(line.product_id.id, 0)
-            if line.qty > pending_qty:
+            if line.qty > 0 and line.product_id not in selected_products:
                 raise UserError(
-                    f"No puede facturar {line.qty} unidades de '{line.product_id.display_name}'. "
-                    f"Solo tiene {pending_qty} pendientes de facturar."
+                    f"El producto '{line.product_id.display_name}' no pertenece a las remisiones seleccionadas."
                 )
 
         # Crear líneas de factura

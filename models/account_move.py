@@ -31,22 +31,16 @@ class AccountMove(models.Model):
                 if not product:
                     continue
 
-                # Buscar remisiones del producto con cantidad pendiente
+                # Incluir saldos en cero o negativos para permitir facturar de más.
                 remission = self.env['pos.remission'].search([
-                    ('product_id', '=', product.id),
-                    ('pending_billing_qty', '>', 0)
+                    ('product_id', '=', product.id)
                 ], limit=1)
 
                 if remission:
-                    if remission.pending_billing_qty < qty:
-                        raise UserError(
-                            f"No puede facturar {qty} unidades de '{product.display_name}'. "
-                            f"Solo tiene {remission.pending_billing_qty} pendientes de facturar."
-                        )
                     remission.pending_billing_qty -= qty
                 else:
                     raise UserError(
-                        f"No existe una remisión con pendiente para el producto '{product.display_name}'."
+                        f"No existe una remisión para el producto '{product.display_name}'."
                     )
         return res
 
